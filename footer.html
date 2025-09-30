@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    :root{
+      --purple:#e9ddff;
+      --gold:#c5a100;
+      --text:#1f2937;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:transparent}
+    footer{
+      margin-top:40px; background:linear-gradient(0deg, var(--purple), #fff);
+      border-top:2px solid rgba(197,161,0,.15);
+    }
+    .container{max-width:1200px;margin:0 auto;padding:24px 16px;color:var(--text)}
+    .grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:16px}
+    h4{margin:0 0 10px;font-size:1.05rem}
+    a{color:#4b5563;text-decoration:none}
+    a:hover{color:#111827;text-decoration:underline}
+    .brand{font-weight:700}
+    .copy{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid rgba(0,0,0,.06);margin-top:14px}
+    .social{display:flex;gap:10px}
+    .pill{
+      display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
+      background:#fff;border:1px solid rgba(0,0,0,.08)
+    }
+    .gold{color:var(--gold)}
+    @media (max-width:800px){ .grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+<footer id="contact">
+  <div class="container">
+    <div class="grid">
+      <div>
+        <div class="brand">khaleelcar</div>
+        <p>منصتك الأنيقة لعرض وبيع السيارات بمواصفاتها الخارجية والداخلية.</p>
+        <div class="pill">خدمة العملاء: <a href="mailto:support@khaleelcar.example">support@khaleelcar.example</a></div>
+      </div>
+      <div>
+        <h4>روابط سريعة</h4>
+        <div><a href="./index.html#cars">قائمة السيارات</a></div>
+        <div><a href="./index.html#sell">اعرض سيارتك</a></div>
+        <div><a href="./contact.html">تواصل</a></div> <!-- زر تواصل ينقل لصفحة جديدة -->
+      </div>
+      <div>
+        <h4>تواصل اجتماعي</h4>
+        <div class="social">
+          <a class="pill" href="https://twitter.com" target="_blank" rel="noopener">X</a>
+          <a class="pill" href="https://instagram.com" target="_blank" rel="noopener">Instagram</a>
+          <a class="pill" href="https://www.youtube.com" target="_blank" rel="noopener">YouTube</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="copy">
+      <div>© <span id="y"></span> <span class="gold">khaleelcar</span>. جميع الحقوق محفوظة.</div>
+      <div><a href="#">سياسة الخصوصية</a> • <a href="#">الشروط</a></div>
+    </div>
+  </div>
+</footer>
+<script>
+  // سنة ديناميكية
+  document.getElementById('y').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>شريط علوي - khaleelcar</title>
+  <!-- خط جميل عربي -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#e9ddff;         /* أرجواني فاتح */
+      --purple-600:#7c3aed;     /* لمسات أغمق */
+      --gold:#c5a100;           /* ذهبي */
+      --gold-700:#9c7f00;
+      --text:#1f2937;
+      --bg:#ffffff;
+      --shadow: 0 8px 20px rgba(124,58,237,.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Tajawal",system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji";
+      background:transparent
+    }
+    header{
+      position:sticky; top:0; z-index:1000;
+      background: linear-gradient(180deg, var(--purple) 0%, #fff 100%);
+      box-shadow: var(--shadow);
+      border-bottom: 2px solid rgba(197,161,0,.15);
+      overflow: hidden;
+    }
+    .header-bg{
+      position:absolute;
+      top:0; left:0;
+      width:100%; height:100%;
+      object-fit:cover;
+      z-index:1;
+    }
+    .overlay{
+      position:relative;
+      z-index:2;
+      width:100%; height:100%;
+      background:rgba(0,0,0,0.45); /* شفافية لتحسين وضوح النص */
+      display:flex; align-items:center;
+    }
+    .container{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:16px}
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .logo{
+      width:40px;height:40px; border-radius:12px;
+      background: radial-gradient(circle at 30% 30%, var(--gold), var(--gold-700));
+      display:grid;place-items:center;color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(197,161,0,.25)
+    }
+    .title{color:#fff;font-weight:700;font-size:1.2rem}
+    nav{margin-inline-start:auto;display:flex;gap:8px;align-items:center}
+    nav a{
+      text-decoration:none; color:#f9fafb; padding:.55rem .9rem; border-radius:999px;
+      transition:.2s ease; font-weight:500
+    }
+    nav a:hover, nav a.active{
+      background:var(--purple); color:#111827; box-shadow:0 2px 8px rgba(124,58,237,.15)
+    }
+    .cta{
+      background: var(--gold); color:#fff; border:none; border-radius:999px;
+      padding:.6rem 1rem; font-weight:700; cursor:pointer; transition:.2s;
+      box-shadow:0 6px 16px rgba(197,161,0,.25)
+    }
+    .cta:hover{background:var(--gold-700)}
+    /* بحث بسيط في الشريط */
+    .search{
+      position:relative; display:flex; align-items:center; gap:8px; margin-inline-start:12px;
+      background:#fff; border:1px solid rgba(124,58,237,.15); border-radius:999px; padding:6px 10px
+    }
+    .search input{
+      border:none; outline:none; width:220px; font-family:inherit
+    }
+    @media (max-width:800px){
+      nav{display:none}
+      .search input{width:140px}
+    }
+    /* رسائل خطأ/نجاح صغيرة */
+    .msg{font-size:.9rem;margin:6px 16px;color:#ef4444;display:none}
+    .msg.ok{color:#059669}
+  </style>
+</head>
+<body>
+<header aria-label="شريط التصفح">
+  <img src="khaleellogo.jpg" alt="شعار khaleelcar" class="header-bg">
+  <div class="overlay">
+    <div class="container">
+      <a class="brand" href="./index.html" aria-label="الانتقال إلى الرئيسية">
+        <div class="title">khaleelcar</div>
+      </a>
+
+      <div class="search" role="search">
+        <input id="q" type="search" placeholder="ابحث عن سيارة..." inputmode="search" aria-label="ابحث عن سيارة" />
+        <button id="searchBtn" class="cta" type="button">بحث</button>
+      </div>
+
+      <nav aria-label="روابط">
+        <a href="./index.html" class="active">الرئيسية</a>
+        <a href="#cars">السيارات</a>
+        <a href="contact.html" target="_blank">تواصل</a>
+      </nav>
+
+      <button class="cta" type="button" onclick="window.location.hash='#cars'">اعرض سياراتك</button>
+    </div>
+  </div>
+  <div id="headerMessage" class="msg" role="status" aria-live="polite"></div>
+</header>
+
+<script>
+  // أمن بسيط: تنظيف مدخلات البحث لمنع سكربتات
+  function sanitize(text){
+    return text.replace(/[<>"]/g, "");
+  }
+
+  // بث حدث بحث للصفحة الرئيسية كي تتفاعل مع البحث
+  const q = document.getElementById('q');
+  const btn = document.getElementById('searchBtn');
+  const msg = document.getElementById('headerMessage');
+
+  function emitSearch(){
+    const query = sanitize(q.value || "");
+    const ev = new CustomEvent('kh-search', { detail:{ query } });
+    window.dispatchEvent(ev);
+
+    // UX: إظهار رسالة سريعة
+    msg.textContent = query ? `بحث: ${query}` : 'تم إفراغ البحث';
+    msg.classList.toggle('ok', true);
+    msg.style.display = 'block';
+    setTimeout(()=> msg.style.display='none', 1500);
+  }
+
+  btn.addEventListener('click', emitSearch);
+  q.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ emitSearch(); }});
+</script>
+</body>
+</html>

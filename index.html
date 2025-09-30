@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>khaleelcar — الرئيسية</title>
+  <meta name="description" content="منصة khaleelcar لعرض السيارات للبيع بمواصفات كاملة خارجية وداخلية." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --purple:#e9ddff; --purple-600:#7c3aed;
+      --gold:#c5a100; --gold-700:#9c7f00;
+      --text:#1f2937; --muted:#6b7280; --bg:#f9fafb;
+      --card:#ffffff; --shadow:0 10px 24px rgba(124,58,237,.10);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:"Tajawal",system-ui; color:var(--text); background:linear-gradient(180deg, var(--purple) 0%, #fff 16%, var(--bg) 100%)}
+
+    /* أماكن حقن القوالب */
+    #header-placeholder, #footer-placeholder {display:block}
+
+    .container{max-width:1200px;margin:0 auto;padding:16px}
+    .hero{
+      background: radial-gradient(circle at 20% 10%, var(--purple) 0%, #fff 40%);
+      border:1px solid rgba(124,58,237,.1); border-radius:24px; padding:26px; margin:16px;
+      box-shadow: var(--shadow);
+    }
+    .hero h1{margin:0 0 8px;font-size:1.8rem}
+    .hero p{margin:0;color:var(--muted)}
+
+    /* بطاقات السيارات */
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:16px}
+    @media (max-width:1000px){ .grid{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:640px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      background:var(--card); border:1px solid rgba(0,0,0,.06); border-radius:18px; overflow:hidden;
+      box-shadow: var(--shadow); display:flex; flex-direction:column
+    }
+    .thumb{aspect-ratio:16/9; object-fit:cover; width:100%; background:#f3f4f6}
+    .body{padding:14px}
+    .title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+    .title h3{margin:0;font-size:1.1rem}
+    .price{color:var(--gold);font-weight:700}
+    .chips{display:flex;flex-wrap:wrap; gap:6px; margin:8px 0}
+    .chip{font-size:.8rem;background:var(--purple);padding:6px 10px;border-radius:999px;border:1px solid rgba(124,58,237,.2)}
+    .actions{display:flex;gap:8px;margin-top:10px}
+    .btn{
+      flex:1; text-align:center; padding:10px 12px; border-radius:12px; cursor:pointer;
+      border:1px solid rgba(0,0,0,.08); background:#fff; font-weight:700; transition:.2s
+    }
+    .btn.primary{background:linear-gradient(180deg, var(--gold), var(--gold-700)); color:#fff; border:none}
+    .btn:hover{transform:translateY(-1px)}
+
+    /* صندوق التفاصيل (مودال) */
+    dialog{
+      border:none; border-radius:16px; box-shadow:0 30px 80px rgba(0,0,0,.28); width:min(720px,92%);
+      padding:0; overflow:hidden
+    }
+    dialog::backdrop{background:rgba(0,0,0,.45)}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid rgba(0,0,0,.06);background:#fff}
+    .modal-body{padding:16px;background:#fff}
+    .specs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .specs section{border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:12px;background:#fafafa}
+    .specs h4{margin:0 0 8px;font-size:1rem;color:#111827}
+    .specs ul{margin:0;padding-inline-start:18px}
+    .close{background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:8px 12px;cursor:pointer}
+
+    /* شريط فلترة إضافي في الصفحة (يتكامل مع بحث الهيدر) */
+    .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 16px}
+    .filters input, .filters select{
+      padding:8px 10px;border-radius:10px;border:1px solid rgba(0,0,0,.12);background:#fff;min-width:140px
+    }
+    .filters .badge{padding:6px 10px;border-radius:999px;background:#fff;border:1px dashed var(--gold);color:var(--gold-700);font-size:.85rem}
+    .sr{position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden;}
+    /* رسائل */
+    .notice{margin:10px 16px;font-size:.95rem;color:#059669;display:none}
+    .error{margin:10px 16px;font-size:.95rem;color:#dc2626;display:none}
+  </style>
+</head>
+<body>
+
+<!-- placeholders -->
+<div id="header-placeholder"></div>
+
+<main class="container">
+  <section class="hero" aria-labelledby="heroTitle">
+    <h1 id="heroTitle">مرحبًا بك في <span style="color:var(--gold);font-weight:700">khaleelcar</span></h1>
+    <p>استكشف سيارات مختارة بمواصفاتها <strong>العامة</strong> و<strong>الخارجية</strong> و<strong>الداخلية</strong> — بسهولة وأناقة.</p>
+  </section>
+
+  <section class="filters" aria-label="مرشحات">
+    <label class="sr" for="brand">العلامة</label>
+    <select id="brand">
+      <option value="">كل العلامات</option>
+      <option>تويوتا</option>
+      <option>مرسيدس</option>
+      <option>هيونداي</option>
+    </select>
+
+    <label class="sr" for="fuel">الوقود</label>
+    <select id="fuel">
+      <option value="">كل أنواع الوقود</option>
+      <option>بنزين</option>
+      <option>ديزل</option>
+      <option>هايبرد</option>
+      <option>كهرباء</option>
+    </select>
+
+    <input id="minPrice" type="number" inputmode="numeric" placeholder="أدنى سعر (ر.س)" />
+    <input id="maxPrice" type="number" inputmode="numeric" placeholder="أعلى سعر (ر.س)" />
+    <span class="badge">ألوان: أرجواني فاتح ✨ + ذهبي</span>
+  </section>
+
+  <div id="ok" class="notice" role="status" aria-live="polite"></div>
+  <div id="err" class="error" role="alert" aria-live="assertive"></div>
+
+  <section id="cars" class="grid" aria-label="قائمة السيارات"></section>
+</main>
+
+<div id="footer-placeholder"></div>
+
+<!-- مودال التفاصيل -->
+<dialog id="detailsDialog" aria-label="تفاصيل السيارة">
+  <div class="modal-head">
+    <strong id="modalTitle">تفاصيل السيارة</strong>
+    <button class="close" type="button" id="closeModal">إغلاق</button>
+  </div>
+  <div class="modal-body">
+    <img id="modalImg" class="thumb" alt="صورة السيارة" />
+    <div class="specs" style="margin-top:12px">
+      <section>
+        <h4>المواصفات العامة</h4>
+        <ul id="genSpecs"></ul>
+      </section>
+      <section>
+        <h4>الخارجية</h4>
+        <ul id="extSpecs"></ul>
+      </section>
+      <section>
+        <h4>الداخلية</h4>
+        <ul id="intSpecs"></ul>
+      </section>
+    </div>
+  </div>
+</dialog>
+
+<script>
+/** =========================================================
+ * أمان وأداء وصيانة:
+ * - تحميل القوالب عبر fetch باستخدام HTTPS عند اللزوم (ملفات محلية تعمل مباشرة).
+ * - تنظيف مدخلات المستخدم لمنع XSS.
+ * - إدارة أخطاء fetch مع رسائل واضحة للمستخدم.
+ * - فصل البيانات عن العرض لسهولة الصيانة.
+ * - لا يوجد تخزين حساس أو توثيق مستخدم؛ إن أضفت لوحة تحكم لاحقًا استخدم JWT/OAuth2.
+ * ========================================================= */
+
+const ok = document.getElementById('ok');
+const err = document.getElementById('err');
+
+// تنظيف عام لنصوص قد تُعرض في الـ DOM
+function sanitize(text){ return String(text).replace(/[<>"]/g, ""); }
+
+// حقن القوالب (الهيدر والفوتر)
+async function inject(path, targetId){
+  const target = document.getElementById(targetId);
+  try{
+    const res = await fetch(path, {credentials:'same-origin'});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const html = await res.text();
+    target.innerHTML = html;
+    ok.textContent = `تم تحميل ${path}`;
+    ok.style.display = 'block';
+    setTimeout(()=> ok.style.display='none', 1200);
+  }catch(e){
+    console.error(e);
+    err.textContent = `تعذر تحميل ${path}. تأكد من المسار أو شغّل من خادم محلي.`;
+    err.style.display = 'block';
+  }
+}
+
+// ملاحظة تشغيل من ملف: بعض المتصفحات تمنع fetch لملفات محلية.
+// الأفضل تشغيل خادم محلي بسيط: مثال في بايثون:  python -m http.server 8000
+inject('./header.html','header-placeholder');
+inject('./footer.html','footer-placeholder');
+
+// بيانات سيارات نموذجية (يمكنك لاحقًا جلبها من API آمن عبر HTTPS)
+const cars = [
+  {
+    id:'c1',
+    brand:'تويوتا',
+    model:'كامري 2022',
+    price: 105000,
+    fuel:'بنزين',
+    img:'https://images.unsplash.com/photo-1549924231-f129b911e442?q=80&w=1600&auto=format&fit=crop',
+    specs:{
+      general:['سعة المحرك 2.5L','ناقل حركة أوتوماتيك 8 السرعات','نظام أمان Toyota Safety Sense'],
+      exterior:['جنوط 18"','مصابيح LED','حساسات أمامية وخلفية'],
+      interior:['مقاعد قماش فاخر','شاشة 9" Apple CarPlay','مكيف مزدوج المناطق']
+    }
+  },
+  {
+    id:'c2',
+    brand:'مرسيدس',
+    model:'C200 2021',
+    price: 175000,
+    fuel:'بنزين',
+    img:'https://images.unsplash.com/photo-1553440569-bcc63803a83d?q=80&w=1600&auto=format&fit=crop',
+    specs:{
+      general:['محرك تيربو 1.5L','ناقل 9G-TRONIC','نظام مساعد السائق'],
+      exterior:['فتحة سقف بانوراما','إضاءة محيطية','جنوط AMG'],
+      interior:['جلد صناعي Artico','شاشة 10.25"','نظام صوتي 9 سماعات']
+    }
+  },
+  {
+    id:'c3',
+    brand:'هيونداي',
+    model:'سوناتا 2023 هايبرد',
+    price: 129000,
+    fuel:'هايبرد',
+    img:'https://images.unsplash.com/photo-1592853625601-cb3ef3eac6a8?q=80&w=1600&auto=format&fit=crop',
+    specs:{
+      general:['محرك 2.0L هايبرد','اقتصاد وقود ممتاز','وسائد هوائية 6'],
+      exterior:['شبك أمامي كروم','كاميرا خلفية','مصابيح نهارية'],
+      interior:['مقاعد مخمل','شاحن لاسلكي','مثبت سرعة']
+    }
+  }
+];
+
+// عرض البطاقات
+const listEl = document.getElementById('cars');
+
+function cardTemplate(car){
+  return `
+  <article class="card" data-id="${car.id}" data-brand="${sanitize(car.brand)}" data-fuel="${sanitize(car.fuel)}" data-price="${car.price}">
+    <img src="${sanitize(car.img)}" alt="صورة ${sanitize(car.brand)} ${sanitize(car.model)}" class="thumb" loading="lazy">
+    <div class="body">
+      <div class="title">
+        <h3>${sanitize(car.brand)} ${sanitize(car.model)}</h3>
+        <div class="price">${car.price.toLocaleString('ar-SA')} ر.س</div>
+      </div>
+      <div class="chips">
+        <span class="chip">${sanitize(car.fuel)}</span>
+        <span class="chip">عام: ${sanitize(car.specs.general[0])}</span>
+      </div>
+      <div class="actions">
+        <button class="btn" data-action="details" data-target="${car.id}">تفاصيل</button>
+        <button class="btn primary" data-action="contact" data-target="${car.id}">تواصل</button>
+      </div>
+    </div>
+  </article>`;
+}
+
+function renderCars(items){
+  listEl.innerHTML = items.map(cardTemplate).join('');
+}
+renderCars(cars);
+
+// فتح التفاصيل في مودال
+const dlg = document.getElementById('detailsDialog');
+const modalTitle = document.getElementById('modalTitle');
+const modalImg = document.getElementById('modalImg');
+const genSpecs = document.getElementById('genSpecs');
+const extSpecs = document.getElementById('extSpecs');
+const intSpecs = document.getElementById('intSpecs');
+document.getElementById('closeModal').addEventListener('click', ()=> dlg.close());
+
+function openDetails(id){
+  const car = cars.find(c=>c.id===id);
+  if(!car){ return; }
+  modalTitle.textContent = `${car.brand} ${car.model}`;
+  modalImg.src = car.img;
+  modalImg.alt = `صورة ${car.brand} ${car.model}`;
+
+  function ul(list, el){
+    el.innerHTML = list.map(li=> `<li>${sanitize(li)}</li>`).join('');
+  }
+  ul(car.specs.general, genSpecs);
+  ul(car.specs.exterior, extSpecs);
+  ul(car.specs.interior, intSpecs);
+
+  dlg.showModal();
+}
+
+// مستمع الأزرار
+listEl.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-action]');
+  if(!btn) return;
+  const id = btn.getAttribute('data-target');
+
+  if(btn.dataset.action==='details'){
+    openDetails(id);
+  }else if(btn.dataset.action==='contact'){
+    // رسالة ودّية؛ لاحقًا اربطها بنموذج تواصل عبر HTTPS
+    alert('سنقوم بربط نموذج تواصل آمن لاحقًا. 👋');
+  }
+});
+
+// فلترة وبحث (من شريط الصفحة + من الهيدر عبر حدث مخصص)
+const brandSel = document.getElementById('brand');
+const fuelSel  = document.getElementById('fuel');
+const minP = document.getElementById('minPrice');
+const maxP = document.getElementById('maxPrice');
+
+function filterCars(queryText=''){
+  const q = (queryText || '').trim();
+  const brand = brandSel.value;
+  const fuel  = fuelSel.value;
+  const min = parseInt(minP.value || '0',10);
+  const max = parseInt(maxP.value || '0',10);
+
+  // فلترة آمنة
+  const filtered = cars.filter(c=>{
+    if(brand && c.brand!==brand) return false;
+    if(fuel && c.fuel!==fuel) return false;
+    if(min && c.price < min) return false;
+    if(max && c.price > max) return false;
+    if(q){
+      const hay = `${c.brand} ${c.model} ${c.fuel}`.toLowerCase();
+      const needle = q.toLowerCase().replace(/[<>"]/g,'');
+      if(!hay.includes(needle)) return false;
+    }
+    return true;
+  });
+  renderCars(filtered);
+}
+
+[brandSel, fuelSel, minP, maxP].forEach(el => el.addEventListener('input', ()=> filterCars()));
+
+window.addEventListener('kh-search', (ev)=> {
+  filterCars(ev.detail?.query || '');
+});
+
+// تحسين بسيط للأداء: إعادة استخدام نفس الـ dialog عند التنقل
+window.addEventListener('hashchange', ()=>{
+  if(location.hash==='#cars'){ listEl.scrollIntoView({behavior:'smooth', block:'start'}); }
+});
+</script>
+</body>
+</html>
